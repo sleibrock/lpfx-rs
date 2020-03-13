@@ -1,16 +1,14 @@
 extern crate portmidi;
+extern crate lpfx;
 
 //use portmidi;
 use std::thread;
 use std::time::Duration;
 
-use portmidi::MidiMessage;
+use lpfx::launchpad::*;
+//use lpfx::colors::*;
 
-mod launchpad;
-use launchpad::*;
 
-mod colors;
-use colors::*;
 
 fn main() {
 
@@ -24,7 +22,7 @@ fn main() {
 fn play(mut lp: &mut Launchpad) {
     println!("Playing something");
 
-    lp.leds_off();
+    lp.clear();
 
     let values = [
 	0, 1,  2,  3,  2,   1,

@@ -2,7 +2,7 @@
 
 extern crate portmidi as pm;
 
-use crate::colors::*;
+use super::colors::*;
 
 
 pub struct Launchpad {
@@ -90,7 +90,7 @@ impl Launchpad {
 	};
     }
 
-    pub fn leds_off(&mut self) -> Result<(), &str> {
+    pub fn clear(&mut self) -> Result<(), &str> {
 	return self.write(0xB0, 0, 0);
     }
 
@@ -118,6 +118,47 @@ impl Launchpad {
     }
 
 
+    pub fn row_on(&mut self, row: u8, vel: u8) -> Result<(), &str> {
+	if row > 7 { return Err("row too large for grid"); }
+
+	for i in 0..8 {
+	    self.write(0x90, (row*16) + i, vel);
+	}
+
+	Ok(())
+    }
+
+    pub fn row_off(&mut self, row: u8) -> Result<(), &str> {
+	if row > 7 { return Err("row too large for grid"); }
+
+	for i in 0..8 {
+	    self.write(0x80, (row*16) + i, 0);
+	}
+
+	Ok(())
+    }
+
+    pub fn column_on(&mut self, col: u8, vel: u8) -> Result<(), &str> {
+	if col > 7 { return Err("col too large for grid"); }
+
+	for i in 0..8 {
+	    self.write(0x90, col + (i*16), vel);
+	}
+
+	Ok(())
+    }
+
+    pub fn column_off(&mut self, col: u8) -> Result<(), &str> {
+	if col > 7 { return Err("col too large for grid"); }
+
+	for i in 0..8 {
+	    self.write(0x80, col + (i*16), 0);
+	}
+
+	Ok(())
+    }
+
+
     pub fn color_all(&mut self, vel: u8) -> Result<(), &str> {
 
 	// we need to execute a message 40 times
@@ -130,3 +171,7 @@ impl Launchpad {
     }
 
 }
+
+
+// end launchpad.rs
+
