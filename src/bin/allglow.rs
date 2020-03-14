@@ -1,20 +1,13 @@
-extern crate portmidi;
 extern crate lpfx;
 
-//use portmidi;
-use std::thread;
-use std::time::Duration;
-
 use lpfx::launchpad::*;
-//use lpfx::colors::*;
-
+use lpfx::utils::*;
 
 
 fn main() {
 
     // Start an instance of a Launchpad from a given ID 
-    let mut launchpad = Launchpad::from_name("Launchpad MIDI 1")
-	.expect("Failed to create a Launchpad instance");
+    let mut launchpad = get_lp_from_name("Launchpad MIDI 1");
 
     play(&mut launchpad)
 }
@@ -34,7 +27,7 @@ fn play(mut lp: &mut Launchpad) {
     for &v in values.iter().cycle() {
 	println!("color: {}", v);
 	lp.color_all(v as u8);
-	thread::sleep(Duration::from_millis(100));
+	sleep_millis(200);
     }
 }
 

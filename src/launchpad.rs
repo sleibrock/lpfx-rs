@@ -12,6 +12,11 @@ pub struct Launchpad {
 }
 
 
+pub fn get_lp_from_name(target: &str) -> Launchpad {
+    return Launchpad::from_name(target)
+	.expect("Failed to create a Launchpad instance");
+}
+
 impl Launchpad {
 
     // not implemented yet
