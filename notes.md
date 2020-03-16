@@ -22,3 +22,10 @@ pub struct Launchpad {
 	pub midi: portmidi::PortMidi,
 }
 ```
+
+## Note 2: LEDs fail to update
+
+### Problem: some LEDs will fail to update, and block future updates
+
+In certain programs on certain intervals, mostly to do when illuminating large amounts of LEDs in a short window, certain LEDs will not update at all and go into an `OFF` state with no chance of recovery, blocking future updates in the program.
+

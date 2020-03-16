@@ -36,13 +36,17 @@ fn play(mut lp: &mut Launchpad) {
 		let v: Vec<u8> = vec![a,b,c,d,e,f,g,h];
 
 		for i in 0..8 {
-		    lp.column_on(i, v[i as usize]);
+		    let vel = v[i as usize];
+		    match vel {
+			0 => { lp.column_off(i); },
+			_ => { lp.column_on(i, vel); },
+		    }
 		}
 	    },
 	    _ => {}
 	}
 
-	sleep_millis(150);
+	sleep_millis(120);
 
 	v = shiftr(v);
     }
