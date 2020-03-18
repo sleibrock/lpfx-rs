@@ -11,6 +11,8 @@ pub struct Launchpad {
     pub midi:   pm::PortMidi,
 }
 
+pub type LPErr = Result<(), String>;
+
 
 pub fn get_lp_from_name(target: &str) -> Launchpad {
     return Launchpad::from_name(target)
@@ -24,14 +26,14 @@ impl Launchpad {
 	//return vec![];
     //}
 
-    pub fn from_name(target: &str) -> Result<Launchpad, &str> {
+    pub fn from_name(target: &str) -> Result<Launchpad, String> {
 	let midi = pm::PortMidi::new()
 	    .expect("Failed to create PortMidi instance");
 	let all_devices = midi.devices()
 	    .expect("Failed to get all devices");
 
 	let mut output_id : Option<i32> = None;
-	let mut input_id : Option<i32> = None;
+	let mut input_id  : Option<i32> = None;
 
 	for device in all_devices {
 	    println!("Device: {}, id: {}", device.name(), device.id());
@@ -48,15 +50,15 @@ impl Launchpad {
 	}
 
 	if output_id.is_some() && input_id.is_some() {
-	    let mut out_port = midi
+	    let out_port = midi
 		.device(output_id.expect("Failed to get Output ID"))
 		.and_then(|dev| midi.output_port(dev, 1024))
-		.expect("Failed to open an output port");
+		.expect("Failed to open an output port".into());
 
-	    let mut in_port = midi
+	    let in_port = midi
 		.device(input_id.expect("Failed to get an Input ID"))
 		.and_then(|dev| midi.input_port(dev, 1024))
-		.expect("Failed to open an input port");
+		.expect("Failed to open an input port".into());
 
 	    return  Ok(Launchpad {
 		input: in_port,
@@ -65,7 +67,7 @@ impl Launchpad {
 	    });
 	}
 
-	return Err("Failed to create Launchpad");
+	return Err("Failed to create Launchpad".into());
     }
 
 
@@ -82,7 +84,7 @@ impl Launchpad {
     /// This function serves as the sub-function used by many convenience
     /// functions, and all Launchpads with a Launchpad-like Trait should
     /// have this method to build an API on top of.
-    pub fn write(&mut self, mtype: u8, note: u8, vel: u8) -> Result<(), &str> {
+    pub fn write(&mut self, mtype: u8, note: u8, vel: u8) -> LPErr {
 	let v = (*self).output.write_message(pm::MidiMessage {
 	    status: mtype,
 	    data1: note,
@@ -91,86 +93,86 @@ impl Launchpad {
 
 	return match v {
 	    Ok(_) => Ok(()),
-	    _  => Err("Failed to write message"),
+	    _  => Err("Failed to write message".into()),
 	};
     }
 
-    pub fn clear(&mut self) -> Result<(), &str> {
-	return self.write(0xB0, 0, 0);
+    pub fn clear(&mut self) -> LPErr {
+	self.write(0xB0, 0, 0)
     }
 
 
-    pub fn led_on(&mut self, x: u8, y: u8, v: u8) -> Result<(), &str> {
-	if x > 7 { return Err("x too large for grid"); }
-	if y > 7 { return Err("y too large for grid"); }
+    pub fn led_on(&mut self, x: u8, y: u8, v: u8) -> LPErr {
+	if x > 7 { return Err("x too large for grid".into()); }
+	if y > 7 { return Err("y too large for grid".into()); }
 
-	return self.write(0x90, x + (y * 8), v);
+	self.write(0x90, x + (y * 16), v)
     }
 
-    pub fn led_off(&mut self, x: u8, y: u8) -> Result<(), &str> {
-	if x > 7 { return Err("x too large for grid"); }
-	if y > 7 { return Err("y too large for grid"); }
+    pub fn led_off(&mut self, x: u8, y: u8) -> LPErr {
+	if x > 7 { return Err("x too large for grid".into()); }
+	if y > 7 { return Err("y too large for grid".into()); }
 
-	return self.write(0x80, 0, 0);
+	self.write(0x80, x + (y * 16), 0)
     }
 
-    pub fn note_on(&mut self, note: u8, vel: u8) -> Result<(), &str> {
-	return self.write(0x90, note, vel);
+    pub fn note_on(&mut self, note: u8, vel: u8) -> LPErr {
+	self.write(0x90, note, vel)
     }
 
-    pub fn note_off(&mut self, note: u8) -> Result<(), &str> {
-	return self.write(0x80, note, 0);
+    pub fn note_off(&mut self, note: u8) -> LPErr {
+	self.write(0x80, note, 0)
     }
 
 
-    pub fn row_on(&mut self, row: u8, vel: u8) -> Result<(), &str> {
-	if row > 7 { return Err("row too large for grid"); }
+    pub fn row_on(&mut self, row: u8, vel: u8) -> LPErr {
+	if row > 7 { return Err("row too large for grid".into()); }
 
 	for i in 0..8 {
-	    self.write(0x90, (row*16) + i, vel);
+	    self.write(0x90, (row*16) + i, vel)?;
 	}
 
 	Ok(())
     }
 
-    pub fn row_off(&mut self, row: u8) -> Result<(), &str> {
-	if row > 7 { return Err("row too large for grid"); }
+    pub fn row_off(&mut self, row: u8) -> LPErr {
+	if row > 7 { return Err("row too large for grid".into()); }
 
 	for i in 0..8 {
-	    self.write(0x80, (row*16) + i, 0);
+	    self.write(0x80, (row*16) + i, 0)?;
 	}
 
 	Ok(())
     }
 
-    pub fn column_on(&mut self, col: u8, vel: u8) -> Result<(), &str> {
-	if col > 7 { return Err("col too large for grid"); }
+    pub fn column_on(&mut self, col: u8, vel: u8) -> LPErr {
+	if col > 7 { return Err("col too large for grid".into()); }
 
 	for i in 0..8 {
-	    self.write(0x90, col + (i*16), vel);
+	    self.write(0x90, col + (i*16), vel)?;
 	}
 
 	Ok(())
     }
 
-    pub fn column_off(&mut self, col: u8) -> Result<(), &str> {
-	if col > 7 { return Err("col too large for grid"); }
+    pub fn column_off(&mut self, col: u8) -> LPErr {
+	if col > 7 { return Err("col too large for grid".into()); }
 
 	for i in 0..8 {
-	    self.write(0x80, col + (i*16), 0);
+	    self.write(0x80, col + (i*16), 0)?;
 	}
 
 	Ok(())
     }
 
 
-    pub fn color_all(&mut self, vel: u8) -> Result<(), &str> {
+    pub fn color_all(&mut self, vel: u8) -> LPErr {
 
 	// we need to execute a message 40 times
 	for i in 0..39 {
-	    self.write(0x92, vel, vel);
+	    self.write(0x92, vel, vel)?;
 	}
-	self.write(0xB0, 1, 1);
+	self.write(0xB0, 1, 1)?;
 
 	return Ok(());
     }
