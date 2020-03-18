@@ -9,13 +9,13 @@ fn main() {
     // Start an instance of a Launchpad from a given ID 
     let mut launchpad = get_lp_from_name("Launchpad MIDI 1");
 
-    play(&mut launchpad)
+    play(&mut launchpad);
 }
 
-fn play(mut lp: &mut Launchpad) {
+fn play(lp: &mut Launchpad) -> LPErr {
     println!("Playing something");
 
-    lp.clear();
+    lp.clear()?;
 
     let values = [
 	0, 1,  2,  3,  2,   1,
@@ -26,9 +26,11 @@ fn play(mut lp: &mut Launchpad) {
 
     for &v in values.iter().cycle() {
 	println!("color: {}", v);
-	lp.color_all(v as u8);
-	sleep_millis(200);
+	lp.color_all(v as u8)?;
+	sleep_millis(150);
     }
+
+    Ok(())
 }
 
 

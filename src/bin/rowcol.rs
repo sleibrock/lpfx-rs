@@ -11,22 +11,22 @@ fn main() {
     play(&mut lp);
 }
 
-fn play(mut lp: &mut Launchpad) {
+fn play(lp: &mut Launchpad) -> LPErr {
 
-    lp.clear();
+    lp.clear()?;
 
     loop {
 	
 	for i in 0..8 {
-	    lp.row_on(i, 3);
+	    lp.row_on(i, 3)?;
 	    sleep_millis(100);
-	    lp.row_off(i);
+	    lp.row_off(i)?;
 	}
 
 	for i in 0..8 {
-	    lp.column_on(i, 3);
+	    lp.column_on(i, 3)?;
 	    sleep_millis(100);
-	    lp.column_off(i);
+	    lp.column_off(i)?;
 	}
 
     }

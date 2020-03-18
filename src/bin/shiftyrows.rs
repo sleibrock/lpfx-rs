@@ -11,7 +11,7 @@ fn main() {
     play(&mut lp);
 }
 
-
+#[derive(Clone)]
 pub enum EightV {
     Vals(u8, u8, u8, u8, u8, u8, u8, u8),
 }
@@ -26,30 +26,32 @@ fn play(lp: &mut Launchpad) -> LPErr {
 
     lp.clear()?;
 
-    let mut v = EightV::Vals(0, 1, 2, 3, 2, 1, 0, 0);
+    let mut v = EightV::Vals(34, 51, 34, 0, 0, 34, 51, 34);
 
     loop {
 
-	match v {
-	    EightV::Vals(a,b,c,d,e,f,g,h) => {
-		let v: Vec<u8> = vec![a,b,c,d,e,f,g,h];
-
-		for i in 0..8 {
-		    let vel = v[i as usize];
-		    match vel {
-			0 => { lp.column_off(i)?; },
-			_ => { lp.column_on(i, vel)?; },
-			
+	for r in 0..8 {
+	    match v {
+		EightV::Vals(a,b,c,d,e,f,g,h) => {
+		    let v: Vec<u8> = vec![a,b,c,d,e,f,g,h];
+		    
+		    for i in 0..8 {
+			let vel = v[i as usize];
+			match vel {
+			    0 => { lp.led_off(i, r)?; },
+			    _ => { lp.led_on(i, r, vel)?; },
+			    
+			}
 		    }
-		}
-	    },
+		},
+	    }
+	    v = shiftr(v);
 	}
 
-	sleep_millis(150);
+	sleep_millis(200);
 	v = shiftr(v);
     }
 
-    return Ok(());
+    Ok(())
 }
 
-// end colfade.rs
