@@ -26,6 +26,12 @@ impl Launchpad {
 	//return vec![];
     //}
 
+
+    /// Create a Launchpad instance from a given name
+    ///
+    /// ```
+    /// let lp = Launchpad::from_name("Launchpad MIDI 1")?;
+    /// ```
     pub fn from_name(target: &str) -> Result<Launchpad, String> {
 	let midi = pm::PortMidi::new()
 	    .expect("Failed to create PortMidi instance");
@@ -84,6 +90,10 @@ impl Launchpad {
     /// This function serves as the sub-function used by many convenience
     /// functions, and all Launchpads with a Launchpad-like Trait should
     /// have this method to build an API on top of.
+    ///
+    /// ```
+    /// lp.write(0x80, 37, 33)?;
+    /// ```
     pub fn write(&mut self, mtype: u8, note: u8, vel: u8) -> LPErr {
 	let v = (*self).output.write_message(pm::MidiMessage {
 	    status: mtype,
@@ -97,11 +107,17 @@ impl Launchpad {
 	};
     }
 
+    /// Clear all the LED statuses
     pub fn clear(&mut self) -> LPErr {
 	self.write(0xB0, 0, 0)
     }
 
 
+    /// Turn a specific LED on
+    ///
+    /// ```
+    /// lp.led_on(3, 4)?;
+    /// ```
     pub fn led_on(&mut self, x: u8, y: u8, v: u8) -> LPErr {
 	if x > 7 { return Err("x too large for grid".into()); }
 	if y > 7 { return Err("y too large for grid".into()); }
@@ -109,6 +125,12 @@ impl Launchpad {
 	self.write(0x90, x + (y * 16), v)
     }
 
+
+    /// Turn off a specific LED
+    ///
+    /// ```
+    /// lp.led_off(3, 4)?;
+    /// ```
     pub fn led_off(&mut self, x: u8, y: u8) -> LPErr {
 	if x > 7 { return Err("x too large for grid".into()); }
 	if y > 7 { return Err("y too large for grid".into()); }
@@ -116,15 +138,32 @@ impl Launchpad {
 	self.write(0x80, x + (y * 16), 0)
     }
 
+
+    /// Set a note's status on with a given velocity
+    ///
+    /// ```
+    /// lp.note_on(33, 51)?;
+    /// ```
     pub fn note_on(&mut self, note: u8, vel: u8) -> LPErr {
 	self.write(0x90, note, vel)
     }
 
+
+    /// Set a note's status to off
+    ///
+    /// ```
+    /// lp.note_off(33)?;
+    /// ```
     pub fn note_off(&mut self, note: u8) -> LPErr {
 	self.write(0x80, note, 0)
     }
 
 
+    /// Turn a row on with a given velocity
+    ///
+    /// ```
+    /// lp.row_on(3, 34)?;
+    /// ```
     pub fn row_on(&mut self, row: u8, vel: u8) -> LPErr {
 	if row > 7 { return Err("row too large for grid".into()); }
 
@@ -135,6 +174,12 @@ impl Launchpad {
 	Ok(())
     }
 
+    
+    /// Turn a row off
+    ///
+    /// ```
+    /// lp.row_off(3)?;
+    /// ```
     pub fn row_off(&mut self, row: u8) -> LPErr {
 	if row > 7 { return Err("row too large for grid".into()); }
 
@@ -145,6 +190,12 @@ impl Launchpad {
 	Ok(())
     }
 
+
+    /// Turn a column on with a given velocity
+    ///
+    /// ```
+    /// lp.column_on(4, 19)?;
+    /// ```
     pub fn column_on(&mut self, col: u8, vel: u8) -> LPErr {
 	if col > 7 { return Err("col too large for grid".into()); }
 
@@ -154,7 +205,13 @@ impl Launchpad {
 
 	Ok(())
     }
+    
 
+    /// Turn a column off
+    ///
+    /// ```
+    /// lp.column_off(4)?;
+    /// ```
     pub fn column_off(&mut self, col: u8) -> LPErr {
 	if col > 7 { return Err("col too large for grid".into()); }
 

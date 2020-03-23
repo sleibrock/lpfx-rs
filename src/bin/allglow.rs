@@ -33,6 +33,4 @@ fn play(lp: &mut Launchpad) -> LPErr {
     Ok(())
 }
 
-
-
-// end
+// end allglow.rs

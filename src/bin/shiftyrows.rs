@@ -1,4 +1,4 @@
-// colfade.rs
+// shiftyrows.rs
 
 extern crate lpfx;
 
@@ -55,3 +55,4 @@ fn play(lp: &mut Launchpad) -> LPErr {
     Ok(())
 }
 
+// end shiftyrows.rs
