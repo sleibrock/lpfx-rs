@@ -4,12 +4,14 @@ use lpfx::launchpad::*;
 use lpfx::utils::*;
 
 
-fn main() {
+fn main() -> LPErr {
 
     // Start an instance of a Launchpad from a given ID 
     let mut launchpad = get_lp_from_name("Launchpad MIDI 1");
 
-    play(&mut launchpad);
+    play(&mut launchpad)?;
+
+    Ok(())
 }
 
 fn play(lp: &mut Launchpad) -> LPErr {

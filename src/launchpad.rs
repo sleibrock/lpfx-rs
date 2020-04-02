@@ -2,9 +2,8 @@
 
 extern crate portmidi as pm;
 
-use super::colors::*;
 
-
+/// Layout of the Launchpad
 pub struct Launchpad {
     pub input:  pm::InputPort,
     pub output: pm::OutputPort,
@@ -226,7 +225,7 @@ impl Launchpad {
     pub fn color_all(&mut self, vel: u8) -> LPErr {
 
 	// we need to execute a message 40 times
-	for i in 0..39 {
+	for _ in 0..39 {
 	    self.write(0x92, vel, vel)?;
 	}
 	self.write(0xB0, 1, 1)?;

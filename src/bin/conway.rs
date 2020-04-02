@@ -8,33 +8,41 @@ use lpfx::utils::*;
 
 const ALIVE  : u8 = 1;
 const DEAD   : u8 = 0;
-const ROWMOD : u8 = 8;
-const GAP : u8 = 7;
+const LBOUND : i16 = 0;
+const RBOUND : i16 = 7;
 
+
+// Store an 8x8 array of state
+// Use quick initializers of [T; N]
 pub struct Game {
     pub cells: [[u8; 8]; 8],
 }
 
+// Game state implementation for getters/updaters
 impl Game {
-    fn get_cell(&self, x: i32, y: i32) -> u8 {
-	let fx : i32 = match (x < 0, x > 7) {
+
+    // Check if supplied (x,y) falls within our 8x8 grid
+    // we use i32 types so we can freely subtract into negatives
+    fn get_cell(&self, x: i16, y: i16) -> u8 {
+	let fx = match (x < LBOUND, x > RBOUND) {
 	    (true, false) => 7,
 	    (false, true) => 0,
-	    _ => x,
+	    _ => x as usize,
 	};
 
-	let fy : i32 = match (y < 0, y > 7) {
+	let fy = match (y < LBOUND, y > RBOUND) {
 	    (true, false) => 7,
 	    (false, true) => 0,
-	    _ => y,
+	    _ => y as usize,
 	};
 
-	return self.cells[fy as usize][fx as usize];
+	return self.cells[fy][fx];
     }
 
-    fn count_neighbors(&self, x: i32, y: i32) -> (u8, u8) {
+    fn count_neighbors(&self, x: i16, y: i16) -> (u8, u8) {
 	let mut n : u8 = 0;
 
+	// count all neighbors (by using addition since ALIVE=1, DEAD=0)
 	n += self.get_cell(x-1, y);
 	n += self.get_cell(x+1, y);
 	n += self.get_cell(x, y-1);
@@ -55,26 +63,36 @@ impl Game {
 		let (v, c) = self.count_neighbors(x, y);
 
 		match (v, c) {
+		    // checks if neighbors == 2 or 3
 		    (ALIVE, 2) | (ALIVE, 3)
 			=> { new_data[y as usize][x as usize] = ALIVE; },
+
+		    // check if dead cells == 3
 		    (DEAD, 3)
 			=> { new_data[y as usize][x as usize] = ALIVE; },
+
+		    // overpopulation/other rules falls here
 		    _ => { new_data[y as usize][x as usize] = DEAD; },
 		}
 	    }
 	}
 
+	// mutate the &self state to the new array
+	// We allocate a new matrix so we don't overrite our
+	// current state frame while counting neighbors and mutating
+	// otherwise would result in wrong state transitions
 	self.cells = new_data;
     }
 }
 
 
-fn main() {
+fn main() -> LPErr {
 
     // Start an instance of a Launchpad from a given ID 
     let mut launchpad = get_lp_from_name("Launchpad MIDI 1");
 
-    play(&mut launchpad);
+    play(&mut launchpad)?;
+    Ok(())
 }
 
 fn play(lp: &mut Launchpad) -> LPErr {
@@ -94,7 +112,7 @@ fn play(lp: &mut Launchpad) -> LPErr {
     loop {
 	for y in 0..8 {
 	    for x in 0..8 {
-		let v = world.get_cell(x as i32, y as i32);
+		let v = world.get_cell(x as i16, y as i16);
 
 		match v {
 		    ALIVE => { lp.led_on(x, y, 3)?; },
@@ -106,8 +124,6 @@ fn play(lp: &mut Launchpad) -> LPErr {
 	world.update();
 	sleep_millis(250);
     }
-
-    Ok(())
 }
 
 // end conway.rs
