@@ -1,6 +1,6 @@
 [package]
 name = "lpfx"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Steven L <steven.leibrock@gmail.com>"]
 edition = "2018"
 
