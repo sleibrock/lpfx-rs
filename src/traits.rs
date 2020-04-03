@@ -17,7 +17,6 @@ pub trait Lightable {
 }
 
 pub trait Grid : Lightable {
-    fn clear(&mut self) -> Err;
     fn row_on(&mut self) -> Err;
     fn row_off(&mut self) -> Err;
     fn column_on(&mut self) -> Err;

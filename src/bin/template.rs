@@ -3,22 +3,19 @@
 
 extern crate lpfx;
 
-use lpfx::launchpad::*;
+use lpfx::prelude::*;
 
 
-fn main() -> LPErr {
+fn main() -> Err {
 
     // Start an instance of a Launchpad from a given ID 
-    let mut launchpad = get_lp_from_name("Target Device Name");
+    let mut launchpad = Launchpad::new("Launchpad MIDI 1")?;
 
-    play(&mut launchpad)?;
-
-    Ok(())
+    return play(&mut launchpad);
 }
 
-fn play(lp: &mut Launchpad) -> LPErr {
+fn play<D: Lightable>(lp: &mut D) -> Err {
     lp.clear()?;
-
 
     loop {
 

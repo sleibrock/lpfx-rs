@@ -4,5 +4,5 @@
 pub mod device;
 pub mod launchpad;
 
-//pub use device;
-//pub use launchpad;
+pub use self::device::*;
+pub use self::launchpad::*;

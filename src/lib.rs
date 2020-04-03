@@ -10,3 +10,5 @@ pub use colors::*;
 pub use devices::*;
 pub use aliases::*;
 pub use traits::*;
+
+pub mod prelude;
