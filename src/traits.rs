@@ -17,10 +17,11 @@ pub trait Lightable {
 }
 
 pub trait Grid : Lightable {
-    fn row_on(&mut self) -> Err;
-    fn row_off(&mut self) -> Err;
-    fn column_on(&mut self) -> Err;
-    fn column_off(&mut self) -> Err;
+    fn row_on(&mut self, row: u8, vel: u8) -> Err;
+    fn row_off(&mut self, row: u8) -> Err;
+    fn column_on(&mut self, col: u8, vel: u8) -> Err;
+    fn column_off(&mut self, col: u8) -> Err;
+    fn color_all(&mut self, vel: u8) -> Err;
 }
 
 

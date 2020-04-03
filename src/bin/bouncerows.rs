@@ -2,18 +2,15 @@
 
 extern crate lpfx;
 
-use lpfx::launchpad::*;
-use lpfx::utils::*;
-use crate::Bounce::*;
+use lpfx::prelude::*;
+use crate::Bounce::*; // shortcutting the enum
 
+// default bounce count
 const B : u8 = 6;
 
-fn main() -> LPErr {
-    let mut lp = get_lp_from_name("Launchpad MIDI 1");
-
-    play(&mut lp)?;
-
-    Ok(())
+fn main() -> Err {
+    let mut lp = Launchpad::new("Launchpad MIDI 1")?;
+    return play(&mut lp);
 }
 
 
@@ -44,7 +41,7 @@ impl Bounce {
 
 
 // Easily draw a row by referencing the Bounce type and the Launchpad
-fn draw_row(row: u8, lp: &mut Launchpad, r: &Bounce) -> LPErr {
+fn draw_row<D: Grid>(row: u8, lp: &mut D, r: &Bounce) -> Err {
     match *r {
 	Left(_,a,b,c,d,e,f,g,h) => {
 	    let values : Vec<u8> = vec![a,b,c,d,e,f,g,h];
@@ -63,7 +60,7 @@ fn draw_row(row: u8, lp: &mut Launchpad, r: &Bounce) -> LPErr {
 }
 
 // Play the whole thing now
-fn play(lp: &mut Launchpad) -> LPErr {
+fn play<D: Grid>(lp: &mut D) -> Err {
 
     // Store an initial array of Bounce types
     // Modify the left-most column to change time before impacts
@@ -79,17 +76,18 @@ fn play(lp: &mut Launchpad) -> LPErr {
 	Left(6, 0,0,0,0,0,0,3,0),
     ];
 
+    // init clear
     lp.clear()?;
-    loop {
 
+    loop {
+	// iter through all rows and draw
 	for r in 0..8 {
 	    let bounce = &rows[r];
-
 	    draw_row(r as u8, lp, bounce)?;
-
 	    rows[r] = bounce.update();
 	}
 
+	// sleep before next cycle
 	sleep_millis(200);
     }
 }
