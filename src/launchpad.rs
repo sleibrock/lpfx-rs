@@ -2,7 +2,6 @@
 
 extern crate portmidi as pm;
 
-
 /// Layout of the Launchpad
 pub struct Launchpad {
     pub input:  pm::InputPort,
@@ -17,6 +16,7 @@ pub fn get_lp_from_name(target: &str) -> Launchpad {
     return Launchpad::from_name(target)
 	.expect("Failed to create a Launchpad instance");
 }
+
 
 impl Launchpad {
 
@@ -230,7 +230,7 @@ impl Launchpad {
 	}
 	self.write(0xB0, 1, 1)?;
 
-	return Ok(());
+	Ok(())
     }
 
 }
