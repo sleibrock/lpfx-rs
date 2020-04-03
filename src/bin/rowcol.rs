@@ -2,17 +2,14 @@
 
 extern crate lpfx;
 
-use lpfx::launchpad::*;
-use lpfx::utils::*;
+use lpfx::prelude::*;
 
-
-fn main() -> LPErr {
-    let mut lp = get_lp_from_name("Launchpad MIDI 1");
-    play(&mut lp)?;
-    Ok(())
+fn main() -> Err {
+    let mut lp = Launchpad::new("Launchpad MIDI 1")?;
+    return play(&mut lp);
 }
 
-fn play(lp: &mut Launchpad) -> LPErr {
+fn play<D: Grid>(lp: &mut D) -> Err {
 
     lp.clear()?;
 

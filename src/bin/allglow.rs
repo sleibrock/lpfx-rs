@@ -1,22 +1,16 @@
 extern crate lpfx;
 
-use lpfx::launchpad::*;
-use lpfx::utils::*;
+use lpfx::prelude::*;
 
 
-fn main() -> LPErr {
+fn main() -> Err {
 
     // Start an instance of a Launchpad from a given ID 
-    let mut launchpad = get_lp_from_name("Launchpad MIDI 1");
-
-    play(&mut launchpad)?;
-
-    Ok(())
+    let mut launchpad = Launchpad::new("Launchpad MIDI 1")?;
+    return play(&mut launchpad);
 }
 
-fn play(lp: &mut Launchpad) -> LPErr {
-    println!("Playing something");
-
+fn play<D: Grid>(lp: &mut D) -> Err {
     lp.clear()?;
 
     let values = [
@@ -27,11 +21,11 @@ fn play(lp: &mut Launchpad) -> LPErr {
     ];
 
     for &v in values.iter().cycle() {
-	println!("color: {}", v);
 	lp.color_all(v as u8)?;
 	sleep_millis(150);
     }
 
+    // a return is needed here because of no infinite loop
     Ok(())
 }
 

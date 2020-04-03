@@ -3,8 +3,8 @@
 
 extern crate lpfx;
 
-use lpfx::launchpad::*;
-use lpfx::utils::*;
+use lpfx::prelude::*;
+
 
 const ALIVE  : u8 = 1;
 const DEAD   : u8 = 0;
@@ -86,16 +86,15 @@ impl Game {
 }
 
 
-fn main() -> LPErr {
+fn main() -> Err {
 
     // Start an instance of a Launchpad from a given ID 
-    let mut launchpad = get_lp_from_name("Launchpad MIDI 1");
+    let mut launchpad = Launchpad::new("Launchpad MIDI 1")?;
 
-    play(&mut launchpad)?;
-    Ok(())
+    return play(&mut launchpad);
 }
 
-fn play(lp: &mut Launchpad) -> LPErr {
+fn play<D: Grid>(lp: &mut D) -> Err {
     lp.clear()?;
 
     let mut world = Game {cells: [

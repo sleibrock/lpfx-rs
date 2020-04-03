@@ -1,2 +1,5 @@
-pub type LPErr = Result<(), String>;
+// aliases.rs
+
 pub type Err = Result<(), String>;
+
+// end aliases.rs
